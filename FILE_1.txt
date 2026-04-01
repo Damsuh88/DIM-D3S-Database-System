@@ -1,0 +1,15 @@
+SET LINESIZE 100
+SET PAGESIZE 50
+SET TRIMSPOOL ON
+SET COLSEP ' | '
+
+COLUMN CustomerCompanyName FORMAT A30
+COLUMN PersonStatus FORMAT A15
+
+SELECT 
+    c.CustomerCompanyName, 
+    p.PersonStatus
+FROM 
+    Customer c
+JOIN 
+    Person p ON c.PersonID = p.PersonID;

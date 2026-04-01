@@ -1,0 +1,46 @@
+SET PAGESIZE 100
+SET LINESIZE 250
+SET COLSEP '|'
+
+CLEAR COLUMNS;
+
+COLUMN CustomerCompanyName FORMAT A30
+COLUMN CustomerIndustry FORMAT A20
+COLUMN RequestCode FORMAT A12
+COLUMN RequestStatus FORMAT A15
+COLUMN OrderCode FORMAT A10
+COLUMN WorkOrderStatus FORMAT A15
+COLUMN QuotationCode FORMAT 99999
+COLUMN QuotationTotalAmount FORMAT 9999999.00
+COLUMN InvoiceNumber FORMAT A15
+COLUMN InvoiceStatus FORMAT A15
+COLUMN TransactionCode FORMAT A15
+COLUMN PaymentAmountPaid FORMAT 999999.00
+
+SELECT
+    C.CustomerCompanyName, C.CustomerIndustry,
+    R.RequestCode, R.RequestStatus,
+    WO.OrderCode, WO.WorkOrderStatus,
+    Q.QuotationCode, Q.QuotationTotalAmount,
+    I.InvoiceNumber, I.InvoiceStatus,
+    T.TransactionCode, T.PaymentAmountPaid
+FROM
+    Customer C
+JOIN
+    Person P ON C.PersonID = P.PersonID
+JOIN
+    Person_Request PR ON P.PersonID = PR.PersonID
+JOIN
+    Request R ON PR.RequestID = R.RequestID
+JOIN
+    WorkOrder WO ON R.RequestID = WO.RequestID
+JOIN
+    Quotation Q ON WO.WorkOrderID = Q.WorkOrderID
+JOIN
+    Invoice I ON Q.QuotationID = I.QuotationID
+JOIN
+    Transactions T ON I.InvoiceID = T.InvoiceID
+WHERE
+    C.CustomerIndustry = 'IT Services' AND
+    R.RequestStatus = 'Open' AND
+    I.InvoiceStatus = 'Paid';

@@ -1,0 +1,35 @@
+-- 5_DROPVIEW: Drop the view if it already exists
+BEGIN
+    EXECUTE IMMEDIATE 'DROP VIEW CompletedReportsView';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE != -942 THEN
+            RAISE;
+        END IF;
+END;
+/
+
+-- 5.1: Create the view
+CREATE VIEW CompletedReportsView AS
+SELECT 
+    sr.ReportID,
+    st.SetupID,
+    e.EmployeeID
+FROM 
+    ServiceReport sr
+JOIN 
+    Setup st ON sr.SetupID = st.SetupID
+JOIN 
+    Person_ServiceReport psr ON psr.ReportID = sr.ReportID
+JOIN 
+    Person p ON psr.PersonID = p.PersonID
+JOIN 
+    Employee e ON p.PersonID = e.PersonID
+WHERE 
+    sr.ServiceReportStatus = 'Completed';
+
+-- 5.2: (DESC can't be scripted, but structure is shown below)
+-- Columns: REPORTID (NUMBER), SETUPID (NUMBER), EMPLOYEEID (NUMBER)
+
+-- 5.3: View the contents
+SELECT * FROM CompletedReportsView;
